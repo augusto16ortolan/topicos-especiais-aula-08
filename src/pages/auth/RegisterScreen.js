@@ -11,18 +11,32 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import supabase from "../../config/supabase";
 
 export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleRegister = () => {
-    if (email && senha) {
+  async function signUpWithEmail() {
+    try {
+      setLoading(true);
+      let user = {
+        email: email,
+        password: senha,
+      };
+      const { data, error } = await supabase.auth.signUp(user);
+      if (error) {
+        alert(error.message);
+        return;
+      }
       navigation.replace("Home");
-    } else {
-      alert("Preencha todos os campos.");
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setLoading(false);
     }
-  };
+  }
 
   return (
     <KeyboardAvoidingView
@@ -60,8 +74,14 @@ export default function RegisterScreen({ navigation }) {
             onChangeText={setSenha}
           />
 
-          <TouchableOpacity style={styles.button} onPress={handleRegister}>
-            <Text style={styles.buttonText}>Cadastrar</Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => signUpWithEmail()}
+            disabled={loading}
+          >
+            <Text style={styles.buttonText}>
+              {loading ? "Carregando..." : "Cadastrar"}
+            </Text>
           </TouchableOpacity>
 
           <Text style={styles.link} onPress={() => navigation.goBack()}>

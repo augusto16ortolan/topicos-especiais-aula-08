@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   TextInput,
@@ -10,16 +10,41 @@ import {
   Keyboard,
   TouchableOpacity,
 } from "react-native";
+import supabase from "../../config/supabase";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    if (email && senha) {
+  const [user, setUser] = useState();
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  async function fetchUser() {
+    const { data } = await supabase.auth.getSession();
+    setUser(data?.session?.user);
+  }
+
+  const handleLogin = async () => {
+    try {
+      setLoading(true);
+      let user = {
+        email: email,
+        password: senha,
+      };
+      const { data, error } = await supabase.auth.signInWithPassword(user);
+      if (error) {
+        alert(error.message);
+        return;
+      }
       navigation.replace("Home");
-    } else {
-      alert("Preencha todos os campos.");
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -30,6 +55,7 @@ export default function LoginScreen({ navigation }) {
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.container}>
+          <Text>{user?.email}</Text>
           <Text style={styles.title}>Bem-vindo de volta 👋</Text>
           <Text style={styles.subtitle}>Faça login para continuar</Text>
 
@@ -53,7 +79,9 @@ export default function LoginScreen({ navigation }) {
           />
 
           <TouchableOpacity style={styles.button} onPress={handleLogin}>
-            <Text style={styles.buttonText}>Entrar</Text>
+            <Text style={styles.buttonText}>
+              {loading ? "Entrando..." : "Entrar"}
+            </Text>
           </TouchableOpacity>
 
           <Text

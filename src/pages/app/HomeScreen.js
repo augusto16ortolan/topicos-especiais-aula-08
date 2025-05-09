@@ -1,14 +1,27 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-
+import supabase from "../../config/supabase";
 export default function HomeScreen({ navigation }) {
-  const handleLogout = () => {
+  const [user, setUser] = useState();
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  async function fetchUser() {
+    const { data } = await supabase.auth.getSession();
+    setUser(data?.session?.user);
+  }
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     navigation.replace("Login");
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.welcome}>Bem-vindo ao seu App!</Text>
+      <Text style={styles.subtext}>{user?.email}</Text>
       <Text style={styles.subtext}>Estamos felizes em ter você aqui.</Text>
 
       <TouchableOpacity style={styles.button} onPress={handleLogout}>

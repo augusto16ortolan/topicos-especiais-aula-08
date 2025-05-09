@@ -1,11 +1,11 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createStackNavigator } from "@react-navigation/stack";
 import LoginScreen from "./src/pages/auth/LoginScreen";
 import RegisterScreen from "./src/pages/auth/RegisterScreen";
 import HomeScreen from "./src/pages/app/HomeScreen";
 
-const Stack = createNativeStackNavigator();
+const Stack = createStackNavigator();
 
 export default function App() {
   return (
