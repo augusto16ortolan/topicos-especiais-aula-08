@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import supabase from "../../config/supabase";
+import { supabase } from "../../config/supabase";
 
 export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState("");

@@ -10,7 +10,7 @@ import {
   Keyboard,
   TouchableOpacity,
 } from "react-native";
-import supabase from "../../config/supabase";
+import { supabase } from "../../config/supabase";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -40,7 +40,6 @@ export default function LoginScreen({ navigation }) {
         alert(error.message);
         return;
       }
-      navigation.replace("Home");
     } catch (error) {
       alert(error.message);
     } finally {

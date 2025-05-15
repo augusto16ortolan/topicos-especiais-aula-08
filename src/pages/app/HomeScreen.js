@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import supabase from "../../config/supabase";
+import { supabase } from "../../config/supabase";
+
 export default function HomeScreen({ navigation }) {
   const [user, setUser] = useState();
 
@@ -15,7 +16,6 @@ export default function HomeScreen({ navigation }) {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    navigation.replace("Login");
   };
 
   return (
