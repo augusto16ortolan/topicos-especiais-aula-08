@@ -6,6 +6,7 @@ import RegisterScreen from "./src/pages/auth/RegisterScreen";
 import HomeScreen from "./src/pages/app/HomeScreen";
 import { supabase } from "./src/config/supabase";
 import { ActivityIndicator, View } from "react-native";
+import ProductForm from "./src/pages/app/ProductForm";
 
 const Stack = createStackNavigator();
 
@@ -54,7 +55,10 @@ export default function App() {
             <Stack.Screen name="Cadastro" component={RegisterScreen} />
           </>
         ) : (
-          <Stack.Screen name="Home" component={HomeScreen} />
+          <>
+            <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="ProductForm" component={ProductForm} />
+          </>
         )}
       </Stack.Navigator>
     </NavigationContainer>
