@@ -1,21 +1,20 @@
-import { supabase } from "../config/supabase";
+import api from "./api";
 
-export async function selectAllProductsForLoggedUser(userId) {
+export async function selectAllProductsForLoggedUser(token) {
   try {
-    let { data: products, error } = await supabase
-      .from("products")
-      .select("*")
-      .eq("user_id", userId);
-
-    if (error) {
-      return {
-        error: error.message,
-        products: [],
-      };
-    }
+    const response = await api.get("/api/products", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     return {
-      products,
+      products: response.data.map((product) => ({
+        id: product.id,
+        name: product.description,
+        price: product.price,
+        quantity: 1,
+      })),
     };
   } catch (error) {
     console.error("Ocorreu um erro ao buscar os produtos.", error.message);
@@ -26,23 +25,21 @@ export async function selectAllProductsForLoggedUser(userId) {
   }
 }
 
-export async function createProduct(userId, product) {
+export async function createProduct(token, product) {
   try {
-    let productToCreate = { ...product, user_id: userId };
-    const { data: productCreated, error } = await supabase
-      .from("products")
-      .insert([productToCreate])
-      .select();
-
-    if (error) {
-      return {
-        error: error.message,
-        product: null,
-      };
-    }
+    const response = await api.post("/api/products", product, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     return {
-      product: productCreated[0],
+      product: {
+        id: response.data.id,
+        name: response.data.description,
+        price: response.data.price,
+        quantity: 1,
+      },
     };
   } catch (error) {
     console.error("Ocorreu um erro ao cadastrar o produto.", error.message);
@@ -53,24 +50,21 @@ export async function createProduct(userId, product) {
   }
 }
 
-export async function updateProduct(userId, productId, product) {
+export async function updateProduct(token, productId, product) {
   try {
-    const { data: productUpdated, error } = await supabase
-      .from("products")
-      .update([product])
-      .eq("user_id", userId)
-      .eq("id", productId)
-      .select();
-
-    if (error) {
-      return {
-        error: error.message,
-        product: null,
-      };
-    }
+    const response = await api.put(`/api/products/${productId}`, product, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     return {
-      product: productUpdated[0],
+      product: {
+        id: response.data.id,
+        name: response.data.description,
+        price: response.data.price,
+        quantity: 1,
+      },
     };
   } catch (error) {
     console.error("Ocorreu um erro ao editar o produto.", error.message);
@@ -83,17 +77,6 @@ export async function updateProduct(userId, productId, product) {
 
 export async function deleteProduct(userId, productId) {
   try {
-    const { error } = await supabase
-      .from("products")
-      .delete()
-      .eq("id", productId)
-      .eq("user_id", userId);
-    if (error) {
-      return {
-        error: error.message,
-        product: null,
-      };
-    }
     return {
       product: null,
     };

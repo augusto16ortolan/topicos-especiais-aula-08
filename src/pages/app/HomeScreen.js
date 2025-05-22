@@ -13,10 +13,12 @@ import {
   deleteProduct,
 } from "../../services/ProductService";
 import ProductCard from "../../components/ProductCard";
+import { useAuth } from "../../context/AuthContext";
 
 export default function HomeScreen({ navigation }) {
   const [productList, setProductList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { token, setUser, setToken, user } = useAuth();
 
   useEffect(() => {
     fetchProducts();
@@ -27,9 +29,7 @@ export default function HomeScreen({ navigation }) {
       setLoading(true);
       setProductList([]);
       const { data: session } = await supabase.auth.getSession();
-      let { products, error } = await selectAllProductsForLoggedUser(
-        session?.session?.user.id
-      );
+      let { products, error } = await selectAllProductsForLoggedUser(token);
       if (error) {
         alert(error);
         return;
@@ -45,7 +45,8 @@ export default function HomeScreen({ navigation }) {
   }
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    setUser(null);
+    setToken(null);
   };
 
   async function deleteProductId(productId) {
@@ -93,6 +94,9 @@ export default function HomeScreen({ navigation }) {
       >
         <Text style={styles.buttonText}>Cadastrar</Text>
       </TouchableOpacity>
+
+      <Text>Usuario: {user?.name}</Text>
+      <Text>Token: {token}</Text>
 
       <FlatList
         keyExtractor={(item) => item.id}

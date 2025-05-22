@@ -11,14 +11,17 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { supabase } from "../../config/supabase";
+//import { supabase } from "../../config/supabase";
+import { register } from "../../services/UserService";
+import { useAuth } from "../../context/AuthContext";
 
 export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [loading, setLoading] = useState(false);
+  const { setToken, setUser } = useAuth();
 
-  async function signUpWithEmail() {
+  /*async function signUpWithEmail() {
     try {
       setLoading(true);
       let user = {
@@ -31,6 +34,18 @@ export default function RegisterScreen({ navigation }) {
         return;
       }
       navigation.replace("Home");
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }*/
+
+  async function signUpWithEmail() {
+    try {
+      const { token, name } = await register(email, senha);
+      setToken(token);
+      setUser({ name });
     } catch (error) {
       alert(error.message);
     } finally {

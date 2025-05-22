@@ -4,6 +4,7 @@ import Input from "../../components/Input";
 import Button from "../../components/Button";
 import { createProduct, updateProduct } from "../../services/ProductService";
 import { supabase } from "../../config/supabase";
+import { useAuth } from "../../context/AuthContext";
 
 export default function ProductForm({ navigation, route }) {
   const { setProductList, productToUpdate } = route.params;
@@ -12,7 +13,9 @@ export default function ProductForm({ navigation, route }) {
   const [price, setPrice] = useState(productToUpdate?.price || 0);
   const [quantity, setQuantity] = useState(productToUpdate?.quantity || 0);
 
-  async function handleSave() {
+  const { token } = useAuth();
+
+  /*async function handleSave() {
     try {
       setLoading(true);
       const productToSave = {
@@ -28,6 +31,38 @@ export default function ProductForm({ navigation, route }) {
             productToSave
           )
         : await createProduct(session?.session?.user.id, productToSave);
+      if (error) {
+        alert(error);
+        return;
+      }
+
+      if (productToUpdate) {
+        setProductList((prevState) =>
+          prevState.map((p) => (p.id === productToUpdate.id ? product : p))
+        );
+      } else {
+        setProductList((prevState) => [...prevState, product]);
+      }
+
+      navigation.goBack();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }*/
+
+  async function handleSave() {
+    try {
+      setLoading(true);
+      const productToSave = {
+        description: name,
+        price,
+        brandId: "8c597b25-8d29-4ddc-b375-b79b2ebd3498",
+      };
+      let { product, error } = productToUpdate
+        ? await updateProduct(token, productToUpdate.id, productToSave)
+        : await createProduct(token, productToSave);
       if (error) {
         alert(error);
         return;
