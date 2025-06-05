@@ -1,10 +1,11 @@
 import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 export default function ProductCard({ product, onEdit, onDelete }) {
   return (
     <View style={styles.card}>
+      <Image style={styles.image} source={{ uri: product.image }} />
       <View style={styles.info}>
         <Text style={styles.name}>{product.description}</Text>
         <Text style={styles.price}>R$ {product.price.toFixed(2)}</Text>
@@ -78,5 +79,13 @@ const styles = StyleSheet.create({
   },
   delete: {
     backgroundColor: "#EF4444",
+  },
+  image: {
+    height: 100,
+    width: 100,
+    borderRadius: 8,
+    backgroundColor: "#D1D5DB",
+    resizeMode: "cover",
+    marginRight: 8,
   },
 });

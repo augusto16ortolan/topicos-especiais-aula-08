@@ -1,4 +1,7 @@
 import { supabase } from "../config/supabase";
+import { decode } from "base64-arraybuffer";
+import * as FileSystem from "expo-file-system";
+import * as mime from "react-native-mime-types";
 
 export async function selectAllProductsForLoggedUser(userId) {
   try {
@@ -28,7 +31,22 @@ export async function selectAllProductsForLoggedUser(userId) {
 
 export async function createProduct(userId, product) {
   try {
-    let productToCreate = { ...product, user_id: userId };
+    const imageUrl = await uploadImage(product.image, userId);
+
+    if (imageUrl === null) {
+      return {
+        error: "Ocorreu um erro ao cadastrar o produto e adicionar imagem.",
+        product: null,
+      };
+    }
+
+    let productToCreate = {
+      description: product.description,
+      price: product.price,
+      user_id: userId,
+      image: imageUrl,
+    };
+
     const { data: productCreated, error } = await supabase
       .from("product")
       .insert([productToCreate])
@@ -55,9 +73,25 @@ export async function createProduct(userId, product) {
 
 export async function updateProduct(userId, productId, product) {
   try {
+    const imageUrl = await uploadImage(product.image, userId);
+
+    if (imageUrl === null) {
+      return {
+        error: "Ocorreu um erro ao cadastrar o produto e adicionar imagem.",
+        product: null,
+      };
+    }
+
+    let productToUpdate = {
+      description: product.description,
+      price: product.price,
+      user_id: userId,
+      image: imageUrl,
+    };
+
     const { data: productUpdated, error } = await supabase
       .from("product")
-      .update([product])
+      .update([productToUpdate])
       .eq("user_id", userId)
       .eq("id", productId)
       .select();
@@ -103,5 +137,41 @@ export async function deleteProduct(userId, productId) {
       error: "Ocorreu um erro ao excluir o produto.",
       product: null,
     };
+  }
+}
+
+async function uploadImage(imageUri, userId) {
+  if (!imageUri) {
+    return "";
+  }
+
+  try {
+    const response = await FileSystem.readAsStringAsync(imageUri, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+
+    const ext = imageUri.split(".").pop();
+    const fileName = `${userId}_${Date.now()}.${ext}`;
+    const filePath = `products/${fileName}`;
+    const contentType = mime.lookup(ext) || "image/jpeg";
+
+    const { error } = await supabase.storage
+      .from("products")
+      .upload(filePath, decode(response), {
+        contentType,
+        upsert: true,
+      });
+
+    if (error) {
+      console.error("Erro ao fazer upload da imagem:", error.message);
+      return null;
+    }
+
+    const { data } = supabase.storage.from("products").getPublicUrl(filePath);
+
+    return data.publicUrl;
+  } catch (err) {
+    console.error("Erro ao processar imagem:", err.message);
+    return null;
   }
 }
