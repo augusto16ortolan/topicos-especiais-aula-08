@@ -1,7 +1,7 @@
-create table products (
-  id uuid default gen_random_uuid() primary key,
-  user_id uuid references auth.users(id) not null,
-  name text not null,
-  price numeric(10,2) not null,
-  quantity integer not null
+CREATE TABLE product (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    description TEXT NOT NULL,
+    price NUMERIC(10, 2) NOT NULL,
+    image TEXT,
+    user_id UUID NOT NULL REFERENCES auth.users(id)
 );
