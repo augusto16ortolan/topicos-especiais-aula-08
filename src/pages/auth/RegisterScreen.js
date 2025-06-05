@@ -30,7 +30,6 @@ export default function RegisterScreen({ navigation }) {
         alert(error.message);
         return;
       }
-      navigation.replace("Home");
     } catch (error) {
       alert(error.message);
     } finally {

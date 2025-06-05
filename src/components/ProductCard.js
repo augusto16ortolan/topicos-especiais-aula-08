@@ -40,8 +40,8 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+    flex: 1,
   },
   info: {
     flex: 1,
@@ -56,11 +56,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#10B981",
     marginTop: 4,
-  },
-  quantity: {
-    fontSize: 14,
-    color: "#6B7280",
-    marginTop: 2,
   },
   buttons: {
     flexDirection: "row",

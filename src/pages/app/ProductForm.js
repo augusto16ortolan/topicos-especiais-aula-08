@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React, { useState } from "react";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
@@ -16,20 +16,21 @@ export default function ProductForm({ navigation, route }) {
   async function handleSave() {
     try {
       setLoading(true);
+
+      const { data: sessionData } = await supabase.auth.getSession();
+      const userId = sessionData?.session?.user.id;
+
       const productToSave = {
         description,
         price,
       };
-      const { data: session } = await supabase.auth.getSession();
+
       let { product, error } = productToUpdate
-        ? await updateProduct(
-            session?.session?.user.id,
-            productToUpdate.id,
-            productToSave
-          )
-        : await createProduct(session?.session?.user.id, productToSave);
+        ? await updateProduct(userId, productToUpdate.id, productToSave)
+        : await createProduct(userId, productToSave);
+
       if (error) {
-        alert(error);
+        alert(error.message || error);
         return;
       }
 
@@ -43,7 +44,8 @@ export default function ProductForm({ navigation, route }) {
 
       navigation.goBack();
     } catch (error) {
-      console.error(error);
+      console.error("Erro ao salvar:", error);
+      alert("Erro ao salvar produto");
     } finally {
       setLoading(false);
     }
@@ -61,6 +63,7 @@ export default function ProductForm({ navigation, route }) {
         onChangeText={(text) => setPrice(Number(text))}
         value={price.toString()}
       />
+
       <Button title="Salvar" onPress={handleSave} loading={loading} />
       <Button title="Voltar" onPress={() => navigation.goBack()} />
     </View>
