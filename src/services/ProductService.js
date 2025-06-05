@@ -3,7 +3,7 @@ import { supabase } from "../config/supabase";
 export async function selectAllProductsForLoggedUser(userId) {
   try {
     let { data: products, error } = await supabase
-      .from("products")
+      .from("product")
       .select("*")
       .eq("user_id", userId);
 
@@ -30,7 +30,7 @@ export async function createProduct(userId, product) {
   try {
     let productToCreate = { ...product, user_id: userId };
     const { data: productCreated, error } = await supabase
-      .from("products")
+      .from("product")
       .insert([productToCreate])
       .select();
 
@@ -56,7 +56,7 @@ export async function createProduct(userId, product) {
 export async function updateProduct(userId, productId, product) {
   try {
     const { data: productUpdated, error } = await supabase
-      .from("products")
+      .from("product")
       .update([product])
       .eq("user_id", userId)
       .eq("id", productId)
@@ -84,7 +84,7 @@ export async function updateProduct(userId, productId, product) {
 export async function deleteProduct(userId, productId) {
   try {
     const { error } = await supabase
-      .from("products")
+      .from("product")
       .delete()
       .eq("id", productId)
       .eq("user_id", userId);

@@ -6,9 +6,8 @@ export default function ProductCard({ product, onEdit, onDelete }) {
   return (
     <View style={styles.card}>
       <View style={styles.info}>
-        <Text style={styles.name}>{product.name}</Text>
+        <Text style={styles.name}>{product.description}</Text>
         <Text style={styles.price}>R$ {product.price.toFixed(2)}</Text>
-        <Text style={styles.quantity}>Quantidade: {product.quantity}</Text>
       </View>
       <View style={styles.buttons}>
         <TouchableOpacity

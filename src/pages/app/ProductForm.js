@@ -8,17 +8,17 @@ import { supabase } from "../../config/supabase";
 export default function ProductForm({ navigation, route }) {
   const { setProductList, productToUpdate } = route.params;
   const [loading, setLoading] = useState(false);
-  const [name, setName] = useState(productToUpdate?.name || "");
+  const [description, setDescription] = useState(
+    productToUpdate?.description || ""
+  );
   const [price, setPrice] = useState(productToUpdate?.price || 0);
-  const [quantity, setQuantity] = useState(productToUpdate?.quantity || 0);
 
   async function handleSave() {
     try {
       setLoading(true);
       const productToSave = {
-        name,
+        description,
         price,
-        quantity,
       };
       const { data: session } = await supabase.auth.getSession();
       let { product, error } = productToUpdate
@@ -51,16 +51,15 @@ export default function ProductForm({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <Input label="Nome" onChangeText={setName} value={name} />
+      <Input
+        label="Descrição"
+        onChangeText={setDescription}
+        value={description}
+      />
       <Input
         label="Preço"
         onChangeText={(text) => setPrice(Number(text))}
         value={price.toString()}
-      />
-      <Input
-        label="Quantidade"
-        onChangeText={(text) => setQuantity(Number(text))}
-        value={quantity.toString()}
       />
       <Button title="Salvar" onPress={handleSave} loading={loading} />
       <Button title="Voltar" onPress={() => navigation.goBack()} />
